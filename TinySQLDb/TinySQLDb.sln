@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinySQLDb", "TinySQLDb.csproj", "{2DE9CF42-FECD-4C05-A8B0-FCC8D86E7C51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryProcessing", "..\QueryProcessing\QueryProcessing.csproj", "{81EE0C68-3E86-41C9-A959-C41AE13500D7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2DE9CF42-FECD-4C05-A8B0-FCC8D86E7C51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DE9CF42-FECD-4C05-A8B0-FCC8D86E7C51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DE9CF42-FECD-4C05-A8B0-FCC8D86E7C51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DE9CF42-FECD-4C05-A8B0-FCC8D86E7C51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81EE0C68-3E86-41C9-A959-C41AE13500D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81EE0C68-3E86-41C9-A959-C41AE13500D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81EE0C68-3E86-41C9-A959-C41AE13500D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81EE0C68-3E86-41C9-A959-C41AE13500D7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7E54EAF1-471D-446E-888E-2F105EB37D0B}
+	EndGlobalSection
+EndGlobal
