@@ -5,7 +5,11 @@ VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TinySQLDb", "TinySQLDb.csproj", "{2DE9CF42-FECD-4C05-A8B0-FCC8D86E7C51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryProcessing", "..\QueryProcessing\QueryProcessing.csproj", "{81EE0C68-3E86-41C9-A959-C41AE13500D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QueryProcessing", "..\QueryProcessing\QueryProcessing.csproj", "{81EE0C68-3E86-41C9-A959-C41AE13500D7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OperationStatus", "..\OperationStatus\OperationStatus.csproj", "{FB5F3EBE-50C7-44EA-8B5C-F35C7AE10C9E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoreSystem", "..\StoreSystem\StoreSystem.csproj", "{82DCED1B-3690-4ADA-8946-E2A470486433}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{81EE0C68-3E86-41C9-A959-C41AE13500D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81EE0C68-3E86-41C9-A959-C41AE13500D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81EE0C68-3E86-41C9-A959-C41AE13500D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB5F3EBE-50C7-44EA-8B5C-F35C7AE10C9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB5F3EBE-50C7-44EA-8B5C-F35C7AE10C9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB5F3EBE-50C7-44EA-8B5C-F35C7AE10C9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB5F3EBE-50C7-44EA-8B5C-F35C7AE10C9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82DCED1B-3690-4ADA-8946-E2A470486433}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82DCED1B-3690-4ADA-8946-E2A470486433}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82DCED1B-3690-4ADA-8946-E2A470486433}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82DCED1B-3690-4ADA-8946-E2A470486433}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

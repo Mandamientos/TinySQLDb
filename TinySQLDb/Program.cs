@@ -1,3 +1,5 @@
 ﻿using ApiInterface;
+using StoreSystem.SystemCatalog;
 
-await server.start();
+SystemCatalog sysCatalog = new SystemCatalog();
+await Server.start();

@@ -6,9 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\OperationStatus\OperationStatus.csproj" />
-    <ProjectReference Include="..\StoreSystem\StoreSystem.csproj" />
-  </ItemGroup>
-
 </Project>

@@ -3,15 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Entities;
 
 namespace ApiInterface.Models
 {
-    public enum operationStatus
-    {
-        Success,
-        Error,
-        Warning
-    }
 
     public class Request
     {
@@ -20,6 +15,8 @@ namespace ApiInterface.Models
 
     public class Response
     {
-
+        public required Request Request { get; set; }
+        public required OperationStatus Status { get; set; }
+        public required string ResponseBody { get; set; }
     }
 }

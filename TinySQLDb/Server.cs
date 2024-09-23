@@ -8,10 +8,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Text.Json;
 using ApiInterface.Models;
+using ApiInterface.Processor;
+using System.Diagnostics.Metrics;
 
 namespace ApiInterface
 {
-    public class server
+    public class Server
     {
         //Levanta el servidor y espera solicitudes asincronicas.
         public static async Task start()
@@ -46,6 +48,11 @@ namespace ApiInterface
             NetworkStream clientStream = client.GetStream();
             string rawMessage = await getRawMessage(clientStream);
             var requestObject = convertJsonToRequest(rawMessage);
+            ResponseCreator responseCreator = new ResponseCreator(requestObject);
+            var response = responseCreator.responseObject();
+
+            string jsonResponse = JsonSerializer.Serialize(response);
+            await sendResponse(clientStream, jsonResponse);
         }
 
         public static async Task<String> getRawMessage(NetworkStream clientStream)
@@ -56,12 +63,22 @@ namespace ApiInterface
 
             incomingMessage = incomingMessage.TrimEnd("<EOM>".ToCharArray());
 
+            Console.WriteLine(incomingMessage);
+
             return incomingMessage;
+        }
+
+        public static async Task sendResponse(NetworkStream clientStream, string jsonResponse)
+        {
+            string messageToSend = jsonResponse + "<EOM>";
+            byte[] responseBuffer = Encoding.UTF8.GetBytes(messageToSend);
+
+            await clientStream.WriteAsync(responseBuffer, 0, responseBuffer.Length);
         }
 
         public static Request convertJsonToRequest(string rawMessage)
         {
-            return JsonSerializer.Deserialize<Request>(rawMessage) ?? throw new Exception("Invalid request.");
+            return JsonSerializer.Deserialize<Request>(rawMessage) ?? throw new Exception("Petición inválida.");
         }
     }
 }
