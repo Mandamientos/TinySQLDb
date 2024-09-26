@@ -8,6 +8,9 @@ namespace QueryProcessing.Operations
 {
     internal class Create_Table
     {
+        private static string path = @"C:\TinySQLDb\SystemCatalog";
+
+        //public static OperationStatus execute(string tableName){}
 
     }
 }
