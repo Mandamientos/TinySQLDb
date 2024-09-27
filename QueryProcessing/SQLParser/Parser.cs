@@ -27,7 +27,7 @@ namespace QueryProcessing.SQLParser
             }
             if (createTableParse(sentence)) 
             {
-                return OperationStatus.Success;
+                return Create_Table.execute(TableName, CreateColumns);
             }
 
             return OperationStatus.Error;

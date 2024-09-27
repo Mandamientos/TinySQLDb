@@ -17,7 +17,8 @@ namespace QueryProcessing.Operations
             if(string.IsNullOrEmpty(dbName))
             {
                 return OperationStatus.Error;
-            } else if (AddDatabase.checkExistence(dbName))
+            } 
+            else if (AddDatabase.checkExistence(dbName))
             {
                 SQLProcessor.selectedDB = dbName;
                 return OperationStatus.Success;
