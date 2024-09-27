@@ -22,7 +22,8 @@ namespace QueryProcessing.Operations
             }
             else if (!AddTable.checkExistence(dbName, tableName))
             {
-                AddTable.execute(dbName, tableName, CreateColumns.First().Key, CreateColumns.First().Value.DataType);
+                AddTable.execute(dbName, tableName);
+                AddColumns.execute(dbName, tableName, CreateColumns.First().Key, CreateColumns.First().Value.DataType, CreateColumns.First().Value.IsNullable, CreateColumns.First().Value.Constraints.First());
                 return OperationStatus.Success;
             }
             return OperationStatus.Error;

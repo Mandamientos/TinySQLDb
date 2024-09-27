@@ -10,7 +10,7 @@ namespace StoreSystem.CatalogOperations
     {
         private const string tabDBPath = @"C:\TinySQLDb\SystemCatalog\SystemTables.dat";
 
-        public static void execute(string dbName, string tabName, string column, string type)
+        public static void execute(string dbName, string tabName)
         {
             using (FileStream stream = new FileStream(tabDBPath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
