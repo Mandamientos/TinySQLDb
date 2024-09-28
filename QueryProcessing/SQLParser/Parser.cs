@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Entities;
 using QueryProcessing.Operations;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace QueryProcessing.SQLParser
 {
@@ -27,6 +28,7 @@ namespace QueryProcessing.SQLParser
             }
             if (createTableParse(sentence)) 
             {
+                Console.WriteLine(CreateColumns.Count);
                 return Create_Table.execute(TableName, CreateColumns);
             }
 
@@ -36,7 +38,8 @@ namespace QueryProcessing.SQLParser
         private static bool createTableParse(string sql) 
         {
             CreateColumns = new Dictionary<string, (string DataType, bool IsNullable, List<string> Constraints)>();
-            var pattern = @"CREATE TABLE\s+(?<tableName>\w+)\s*\((?<columns>.+?)\)\s*";
+            var pattern = @"CREATE TABLE\s+(?<tableName>\w+)\s*\((?<columns>.+?)\)\s*;";
+            sql = sql + ";";
             if (ParseCreateTableStatement(sql, pattern)) 
             {
                 return true;
