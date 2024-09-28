@@ -32,6 +32,11 @@ namespace QueryProcessing.SQLParser
                 return Create_Table.execute(TableName, CreateColumns);
             }
 
+            if (sentence.StartsWith("DROP TABLE"))
+            {
+                return Drop_Table.execute(sentence.Substring("DROP TABLE ".Length).Trim());
+            }
+
             return OperationStatus.Error;
         }
 
