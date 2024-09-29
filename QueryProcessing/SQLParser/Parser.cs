@@ -14,6 +14,7 @@ namespace QueryProcessing.SQLParser
     {
         private static string TableName;
         private static Dictionary<string, (string DataType, bool IsNullable, List<string> Constraints)> CreateColumns;
+        private static List<string> inserts;
 
         public static OperationStatus sentenceParser(string sentence)
         {
@@ -22,20 +23,24 @@ namespace QueryProcessing.SQLParser
                 return Create_Database.execute(sentence);
             }
 
-            if (sentence.StartsWith("SET DATABASE"))
+            else if (sentence.StartsWith("SET DATABASE"))
             {
                 return Set_Database.execute(sentence);
             }
-            if (createTableParse(sentence)) 
+            else if (createTableParse(sentence))
             {
-                Console.WriteLine(CreateColumns.Count);
                 return Create_Table.execute(TableName, CreateColumns);
             }
-
-            if (sentence.StartsWith("DROP TABLE"))
+            else if (sentence.StartsWith("DROP TABLE"))
             {
                 return Drop_Table.execute(sentence.Substring("DROP TABLE ".Length).Trim());
             }
+            else if (insertInto(sentence)) 
+            {
+                Console.WriteLine("Si cumplio el insert into");
+                return Insert_Into.execute(TableName, inserts); ;
+            }
+
 
             return OperationStatus.Error;
         }
@@ -46,6 +51,18 @@ namespace QueryProcessing.SQLParser
             var pattern = @"CREATE TABLE\s+(?<tableName>\w+)\s*\((?<columns>.+?)\)\s*;";
             sql = sql + ";";
             if (ParseCreateTableStatement(sql, pattern)) 
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private static bool insertInto(string sql) 
+        {
+            Console.WriteLine("entro al inser into a validar");
+            inserts= new List<string>();
+            var pattern = @"Insert Into\s+(?<tableName>\w+)\s*\((?<inserts>.+?)\)";
+            if (ParseInsertStatement(sql, pattern))
             {
                 return true;
             }
@@ -156,5 +173,60 @@ namespace QueryProcessing.SQLParser
 
                 return knownConstraints.Contains(constraint, StringComparer.OrdinalIgnoreCase);
             }
+
+        private static bool ParseInsertStatement(string sql, string pattern)
+        {
+            // Match the INSERT INTO statement using the provided pattern
+            var match = Regex.Match(sql, pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            if (!match.Success)
+            {
+                return false;
+            }
+
+            // Extract the table name
+            TableName = match.Groups["tableName"].Value.Trim();
+
+            // Extract the values part of the statement
+            var valuesPart = match.Groups["inserts"].Value.Trim();
+            inserts = ParseValues(valuesPart);
+
+
+            return true;
         }
+
+        private static List<string> ParseValues(string valuesPart)
+        {
+            var values = new List<string>();
+            var currentValue = "";
+            bool insideString = false;
+
+            foreach (char c in valuesPart)
+            {
+                // Handle string literals that may contain commas
+                if (c == '"')
+                {
+                    insideString = !insideString;
+                }
+
+                // If we encounter a comma and we're not inside a string, treat it as a separator
+                if (c == ',' && !insideString)
+                {
+                    values.Add(currentValue.Trim());
+                    currentValue = "";
+                }
+                else
+                {
+                    currentValue += c;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(currentValue))
+            {
+                values.Add(currentValue.Trim());
+            }
+            return values;
+        }
+
+
+    }
 }

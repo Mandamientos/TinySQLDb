@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
@@ -9,24 +8,23 @@ using StoreSystem.CatalogOperations;
 
 namespace QueryProcessing.Operations
 {
-    internal class Create_Table
+    internal class Insert_Into
     {
-
-        public static OperationStatus execute(string tableName, Dictionary<string, (string DataType, bool IsNullable, List<string> Constraints)> CreateColumns)
+        public static OperationStatus execute(string tableName, List<string> Inserts)
         {
             string dbName = SQLProcessor.selectedDB;
             if (string.IsNullOrEmpty(dbName))
             {
                 return OperationStatus.Error;
             }
-            else if (!AddTable.checkExistence(dbName, tableName))
+            else if (AddInsert.checkExistence(dbName, tableName))
             {
-                AddTable.execute(dbName, tableName);
-                AddColumns.execute(dbName, tableName, CreateColumns);
+                Console.WriteLine(tableName);
+                Console.WriteLine(Inserts.Count);
+                AddInsert.execute(dbName, tableName, Inserts);
                 return OperationStatus.Success;
             }
             return OperationStatus.Error;
         }
-
     }
 }
