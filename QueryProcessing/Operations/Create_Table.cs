@@ -12,20 +12,20 @@ namespace QueryProcessing.Operations
     internal class Create_Table
     {
 
-        public static OperationStatus execute(string tableName, Dictionary<string, (string DataType, bool IsNullable, List<string> Constraints)> CreateColumns)
+        public static (OperationStatus, string) execute(string tableName, Dictionary<string, (string DataType, bool IsNullable, List<string> Constraints)> CreateColumns)
         {
             string dbName = SQLProcessor.selectedDB;
             if (string.IsNullOrEmpty(dbName))
             {
-                return OperationStatus.Error;
+                return (OperationStatus.Error, "Unknown error.");
             }
             else if (!AddTable.checkExistence(dbName, tableName))
             {
                 AddTable.execute(dbName, tableName);
                 AddColumns.execute(dbName, tableName, CreateColumns);
-                return OperationStatus.Success;
+                return (OperationStatus.Success, "Table successfully created.");
             }
-            return OperationStatus.Error;
+            return (OperationStatus.Error, "Unknown error.");
         }
 
     }

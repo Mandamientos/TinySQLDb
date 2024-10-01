@@ -11,20 +11,20 @@ namespace QueryProcessing.Operations
 {
     internal class Drop_Table
     {
-        public static OperationStatus execute(string tableName)
+        public static (OperationStatus, string) execute(string tableName)
         {
             if(string.IsNullOrEmpty(tableName))
             {
-                return OperationStatus.Error;
+                return (OperationStatus.Error, "Unknown error.");
             } else if (AddTable.checkExistence(SQLProcessor.selectedDB, tableName) && DropTable.isItEmpty(tableName, SQLProcessor.selectedDB)) {
                 
                 DropTable.delTable(tableName, SQLProcessor.selectedDB);
                 DropTable.delCols(tableName, SQLProcessor.selectedDB);
 
-                return OperationStatus.Success;
+                return (OperationStatus.Success, "Table deleted successfully.");
             }
 
-            return OperationStatus.Error;
+            return (OperationStatus.Error, "Unknown error.");
         }
     }
 }

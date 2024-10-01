@@ -10,21 +10,21 @@ namespace QueryProcessing.Operations
 {
     public class Set_Database
     {
-        public static OperationStatus execute(string sentence) {
+        public static (OperationStatus, string) execute(string sentence) {
             string dbName = sentence.Substring("SET DATABASE ".Length).Trim();
             Console.WriteLine(dbName);
 
             if(string.IsNullOrEmpty(dbName))
             {
-                return OperationStatus.Error;
+                return (OperationStatus.Error, "Illegal database name.");
             } 
             else if (AddDatabase.checkExistence(dbName))
             {
                 SQLProcessor.selectedDB = dbName;
-                return OperationStatus.Success;
+                return (OperationStatus.Success, $"Database '{dbName}' established successfully.");
             }
 
-            return OperationStatus.Error;
+            return (OperationStatus.Error, "Seems like that database doesn't exists.");
         }
     }
 }

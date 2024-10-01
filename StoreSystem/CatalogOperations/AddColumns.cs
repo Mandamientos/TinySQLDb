@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
@@ -35,6 +36,22 @@ namespace StoreSystem.CatalogOperations
                     writer.Write(result);
                 }
             }
+        }
+
+        public static bool checkExistance(string dbName, List<String> cols)
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(colDBPath, FileMode.Open)))
+            {
+                byte[] sysColsContent = reader.ReadBytes((int)reader.BaseStream.Length);
+                string sysCols = Encoding.UTF8.GetString(sysColsContent);
+
+                foreach (string col in cols) {
+                    if (!sysCols.Contains(col)) return false;
+                }
+
+            }
+            
+            return true;
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Entities;
 using QueryProcessing.Operations;
 using System.Text.RegularExpressions;
+using QueryProcessing.Models;
 using System.Diagnostics;
 
 namespace QueryProcessing.SQLParser
@@ -16,7 +17,7 @@ namespace QueryProcessing.SQLParser
         private static Dictionary<string, (string DataType, bool IsNullable, List<string> Constraints)> CreateColumns;
         private static List<string> inserts;
 
-        public static OperationStatus sentenceParser(string sentence)
+        public static (OperationStatus, string) sentenceParser(string sentence)
         {
             if (sentence.StartsWith("CREATE DATABASE"))
             {
@@ -39,10 +40,13 @@ namespace QueryProcessing.SQLParser
             {
                 Console.WriteLine("Si cumplio el insert into");
                 return Insert_Into.execute(TableName, inserts); ;
+            } else if (parseSelectTable(sentence))
+            {
+                return Select_Table.execute(createSelectModel(sentence));
             }
 
 
-            return OperationStatus.Error;
+            return (OperationStatus.Error, "There might be an error in your syntax; please check it.");
         }
 
         private static bool createTableParse(string sql) 
@@ -227,6 +231,62 @@ namespace QueryProcessing.SQLParser
             return values;
         }
 
+        public static bool parseSelectTable(string sentence)
+        {
+            string patternFullQuery = @"^SELECT\s+(\*|[\w\s]+(,[\w\s]+)*)\s+FROM\s+(\w+)" + 
+                @"(\s+WHERE\s+(\w+)\s*(==|>|<|NOT|LIKE)\s*('[^']*'|\d+|\w+))?" + 
+                @"(\s+ORDER BY\s+(\w+)\s*(ASC|DESC))?$";
+            Match patternMatch = Regex.Match(sentence, patternFullQuery, RegexOptions.IgnoreCase);
+
+            if (!patternMatch.Success)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public static SelectModel createSelectModel(string sentence)
+        {
+            var sql = new SelectModel();
+
+            string patternFullQuery = @"^SELECT\s+(\*|[\w\s]+(,[\w\s]+)*)\s+FROM\s+(\w+)" + 
+                @"(\s+WHERE\s+(\w+)\s*(==|>|<|NOT|LIKE)\s*('[^']*'|\d+|\w+))?" + 
+                @"(\s+ORDER BY\s+(\w+)\s*(ASC|DESC))?$";
+
+            Match matchPattern = Regex.Match(sentence, patternFullQuery, RegexOptions.IgnoreCase);
+
+            string cols = matchPattern.Groups[1].Value.Trim();
+            if (cols == "*") sql.columns.Add("*");
+            else
+            {
+                string[] colsList;
+                colsList = cols.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (string col in colsList) {
+                    if (string.IsNullOrEmpty(col)) return null;
+                    sql.columns.Add(col.Trim());
+                }
+            }
+
+            string tableName = matchPattern.Groups[3].Value.Trim();
+            sql.tableName = tableName;
+
+            if (matchPattern.Groups[4].Success)
+            {
+                string whereColumn = matchPattern.Groups[5].Value.Trim();
+                string whereOperator = matchPattern.Groups[6].Value.Trim();
+                string whereValue = matchPattern.Groups[7].Value.Trim();
+
+                sql.whereColumn = whereColumn;
+                sql.whereComparator = whereOperator;
+                sql.whereValue = whereValue;
+            }
+
+            return sql;
+        }
 
     }
 }
+
+

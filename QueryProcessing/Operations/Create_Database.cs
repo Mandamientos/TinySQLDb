@@ -11,19 +11,19 @@ namespace QueryProcessing.Operations
     public class Create_Database
     {
         private static string path = @"C:\TinySQLDb\Databases";
-        public static OperationStatus execute(string sentence)
+        public static (OperationStatus, string) execute(string sentence)
         {
             string dbName = sentence.Substring("CREATE DATABASE ".Length).Trim();
             if (string.IsNullOrEmpty(dbName))
             {
-                return OperationStatus.Error;
+                return (OperationStatus.Error, "Illegal database name.");
             } else
             {
                 foreach(char character in dbName)
                 {
                     if(!char.IsLetterOrDigit(character))
                     {
-                        return OperationStatus.Error;
+                        return (OperationStatus.Error, "Illegal database name.");
                     }
                 }
 
@@ -32,10 +32,10 @@ namespace QueryProcessing.Operations
                 {
                     Directory.CreateDirectory(dbPath);
                     AddDatabase.execute(dbName);
-                    return OperationStatus.Success;
+                    return (OperationStatus.Success, $"Database '{dbName}' created successfully.");
                 } else
                 {
-                    return OperationStatus.Error;
+                    return (OperationStatus.Error, "Unknown error.");
                 }
 
             }

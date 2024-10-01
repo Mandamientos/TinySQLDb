@@ -21,13 +21,13 @@ namespace ApiInterface.Processor
             return response;
         }
 
-        private Response convertToResponse(OperationStatus result)
+        private Response convertToResponse((OperationStatus, string) result)
         {
             return new Response
             {
-                Status = result,
+                Status = result.Item1,
                 Request = this.Request,
-                ResponseBody = string.Empty
+                ResponseBody = result.Item2
             };
         }
     }

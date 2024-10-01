@@ -11,7 +11,7 @@ namespace QueryProcessing
     public class SQLProcessor()
     {
         public static string selectedDB;
-        public static OperationStatus executeQuery(string sentence)
+        public static (OperationStatus, string) executeQuery(string sentence)
         {
             return Parser.sentenceParser(sentence);
         }
