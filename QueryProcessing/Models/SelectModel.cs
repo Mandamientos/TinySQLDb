@@ -12,7 +12,7 @@ namespace QueryProcessing.Models
         public string tableName { get; set; }
         public string whereColumn { get; set; }
         public string whereComparator { get; set; }
-        public string whereValue { get; set; }
+        public object whereValue { get; set; }
         public string OrderDirection { get; set; }
 
         public SelectModel()

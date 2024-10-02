@@ -233,8 +233,8 @@ namespace QueryProcessing.SQLParser
 
         public static bool parseSelectTable(string sentence)
         {
-            string patternFullQuery = @"^SELECT\s+(\*|[\w\s]+(,[\w\s]+)*)\s+FROM\s+(\w+)" + 
-                @"(\s+WHERE\s+(\w+)\s*(==|>|<|NOT|LIKE)\s*('[^']*'|\d+|\w+))?" + 
+            string patternFullQuery = @"^SELECT\s+(\*|[\w\s]+(,[\w\s]+)*)\s+FROM\s+(\w+)" +
+                @"(\s+WHERE\s+(\w+)\s*(==|>|<|NOT|LIKE)\s*('[^']*'|\d+(\.\d+)?|\w+))?" +
                 @"(\s+ORDER BY\s+(\w+)\s*(ASC|DESC))?$";
             Match patternMatch = Regex.Match(sentence, patternFullQuery, RegexOptions.IgnoreCase);
 
@@ -250,8 +250,8 @@ namespace QueryProcessing.SQLParser
         {
             var sql = new SelectModel();
 
-            string patternFullQuery = @"^SELECT\s+(\*|[\w\s]+(,[\w\s]+)*)\s+FROM\s+(\w+)" + 
-                @"(\s+WHERE\s+(\w+)\s*(==|>|<|NOT|LIKE)\s*('[^']*'|\d+|\w+))?" + 
+            string patternFullQuery = @"^SELECT\s+(\*|[\w\s]+(,[\w\s]+)*)\s+FROM\s+(\w+)" +
+                @"(\s+WHERE\s+(\w+)\s*(==|>|<|NOT|LIKE)\s*('[^']*'|\d+(\.\d+)?|\w+))?" +
                 @"(\s+ORDER BY\s+(\w+)\s*(ASC|DESC))?$";
 
             Match matchPattern = Regex.Match(sentence, patternFullQuery, RegexOptions.IgnoreCase);
@@ -278,9 +278,24 @@ namespace QueryProcessing.SQLParser
                 string whereOperator = matchPattern.Groups[6].Value.Trim();
                 string whereValue = matchPattern.Groups[7].Value.Trim();
 
-                sql.whereColumn = whereColumn;
+                if (whereValue.Contains("'"))
+                {
+                    sql.whereValue = whereValue.Replace("'", "");
+                }
+                else if (int.TryParse(whereValue, out _))
+                {
+                    Console.WriteLine("WhereValue es un entero >:D" + int.Parse(whereValue));
+                    sql.whereValue = int.Parse(whereValue);
+                }
+                else if (double.TryParse(whereValue, out _))
+                {
+                    Console.WriteLine("WhereValue es un doble >:D" + double.Parse(whereValue));
+                    sql.whereValue = double.Parse(whereValue);
+                }
+                else sql.whereValue = whereValue;
+
                 sql.whereComparator = whereOperator;
-                sql.whereValue = whereValue;
+                sql.whereColumn = whereColumn;
             }
 
             return sql;

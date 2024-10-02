@@ -9,9 +9,9 @@ namespace StoreSystem.CatalogOperations
     public class GetTableColumns
     {
         private const string colDBPath = @"C:\TinySQLDb\SystemCatalog\SystemColumns.dat";
-        public static List<string> GetTableNameColumns(string dbName, string tableName)
+        public static List<List<string>> GetTableNameColumns(string dbName, string tableName)
         {
-            List<string> columns = new List<string>();
+            List<List<string>> columns = new List<List<string>>();
 
             using(BinaryReader reader = new BinaryReader(File.Open(colDBPath, FileMode.Open)))
             {
@@ -21,8 +21,7 @@ namespace StoreSystem.CatalogOperations
                     if(currentString.StartsWith($"{dbName},{tableName}"))
                     {
                         string[] tempArray = currentString.Split(',');
-                        Console.WriteLine(tempArray[2]);
-                        columns.Add(tempArray[2]);
+                        columns.Add(new List<String> { tempArray[2], tempArray[3] });
                     }
                 }
             }
