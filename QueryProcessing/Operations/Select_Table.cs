@@ -48,7 +48,7 @@ namespace QueryProcessing.Operations
             if (!string.IsNullOrEmpty(selectQuery.whereColumn))
             {
                 rawData = GetTableData.whereClause(selectQuery.whereColumn, selectQuery.whereComparator, selectQuery.whereValue, rawData, dataFormatter);
-                if (Equals(rawData, null)) return (OperationStatus.Error, "No records were found matching the specified WHERE clauses.");
+                if (Equals(rawData, null) || !rawData.Any()) return (OperationStatus.Error, "No records were found matching the specified WHERE clauses.");
             }
 
             foreach (var row in rawData)
