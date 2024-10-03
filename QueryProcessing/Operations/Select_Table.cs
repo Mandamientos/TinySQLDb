@@ -44,6 +44,15 @@ namespace QueryProcessing.Operations
 
             List<Dictionary<string, object>> data = new List<Dictionary<string, object>>();
 
+            if(!string.IsNullOrEmpty(selectQuery.OrderColumn))
+            {
+                int index = dataFormatter.FindIndex(sublist => sublist[0] == selectQuery.OrderColumn);
+                bool direction;
+                if (index == -1) return (OperationStatus.Success, "The column specified in the ORDER BY clause was not found.");
+                if ((selectQuery.OrderDirection == "ASC")) direction = true;
+                else direction = false;
+                rawData = Quicksort.sortManager(rawData, index, direction);
+            }
 
             if (!string.IsNullOrEmpty(selectQuery.whereColumn))
             {

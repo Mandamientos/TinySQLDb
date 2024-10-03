@@ -235,7 +235,7 @@ namespace QueryProcessing.SQLParser
         {
             string patternFullQuery = @"^SELECT\s+(\*|[\w\s]+(,[\w\s]+)*)\s+FROM\s+(\w+)" +
                 @"(\s+WHERE\s+(\w+)\s*(==|>|<|NOT|LIKE)\s*('[^']*'|\d+(\.\d+)?|\w+))?" +
-                @"(\s+ORDER BY\s+(\w+)\s*(ASC|DESC))?$";
+                @"(\s+ORDER\s+BY\s+(\w+)\s+(ASC|DESC))?$";
             Match patternMatch = Regex.Match(sentence, patternFullQuery, RegexOptions.IgnoreCase);
 
             if (!patternMatch.Success)
@@ -252,7 +252,7 @@ namespace QueryProcessing.SQLParser
 
             string patternFullQuery = @"^SELECT\s+(\*|[\w\s]+(,[\w\s]+)*)\s+FROM\s+(\w+)" +
                 @"(\s+WHERE\s+(\w+)\s*(==|>|<|NOT|LIKE)\s*('[^']*'|\d+(\.\d+)?|\w+))?" +
-                @"(\s+ORDER BY\s+(\w+)\s*(ASC|DESC))?$";
+                @"(\s+ORDER\s+BY\s+(\w+)\s+(ASC|DESC))?$";
 
             Match matchPattern = Regex.Match(sentence, patternFullQuery, RegexOptions.IgnoreCase);
 
@@ -280,22 +280,32 @@ namespace QueryProcessing.SQLParser
 
                 if (whereValue.Contains("'"))
                 {
-                    sql.whereValue = whereValue.Replace("'", "");
+                    string whereValueW = whereValue.Replace("'", "");
+                    if (DateTime.TryParse(whereValueW, out _)) {
+                        sql.whereValue = DateTime.Parse(whereValueW);
+                        Console.WriteLine("El dato es un datetime");
+                    }
+                    else
+                        sql.whereValue = whereValueW;
                 }
                 else if (int.TryParse(whereValue, out _))
                 {
-                    Console.WriteLine("WhereValue es un entero >:D" + int.Parse(whereValue));
                     sql.whereValue = int.Parse(whereValue);
                 }
                 else if (double.TryParse(whereValue, out _))
                 {
-                    Console.WriteLine("WhereValue es un doble >:D" + double.Parse(whereValue));
                     sql.whereValue = double.Parse(whereValue);
                 }
                 else sql.whereValue = whereValue;
 
                 sql.whereComparator = whereOperator;
                 sql.whereColumn = whereColumn;
+            }
+
+            if (matchPattern.Groups[10].Success && matchPattern.Groups[11].Success)
+            {
+                sql.OrderColumn = matchPattern.Groups[10].Value.Trim();
+                sql.OrderDirection = matchPattern.Groups[11].Value.Trim();
             }
 
             return sql;

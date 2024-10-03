@@ -67,7 +67,7 @@ namespace StoreSystem.CatalogOperations
                 case "DOUBLE":
                     return double.Parse(data);
                 case "DATETIME":
-                    return data;
+                    return DateTime.Parse(data);
                 default:
                     throw new NotImplementedException();
             }
@@ -122,10 +122,10 @@ namespace StoreSystem.CatalogOperations
                     if (!Equals(whereValue, tableValue)) return true;
                     else return false;
                 case ">":
-                    if (String.Compare(whereValue, tableValue) > 0) return true;
+                    if (string.Compare(whereValue, tableValue, StringComparison.OrdinalIgnoreCase) < 0) return true;
                     else return false;
                 case "<":
-                    if (String.Compare(whereValue, tableValue) < 0) return true;
+                    if (string.Compare(whereValue, tableValue, StringComparison.OrdinalIgnoreCase) > 0) return true;
                     else return false;
                 default:
                     return false;
@@ -144,10 +144,10 @@ namespace StoreSystem.CatalogOperations
                     if (!Equals(whereValue, tableValue)) return true;
                     else return false;
                 case ">":
-                    if (whereValue > tableValue) return true;
+                    if (whereValue < tableValue) return true;
                     else return false;
                 case "<":
-                    if (whereValue < tableValue) return true;
+                    if (whereValue > tableValue) return true;
                     else return false;
                 default:
                     return false;
@@ -165,10 +165,10 @@ namespace StoreSystem.CatalogOperations
                     if (!Equals(whereValue, tableValue)) return true;
                     else return false;
                 case ">":
-                    if (whereValue > tableValue) return true;
+                    if (whereValue < tableValue) return true;
                     else return false;
                 case "<":
-                    if (whereValue < tableValue) return true;
+                    if (whereValue > tableValue) return true;
                     else return false;
                 default:
                     return false;
