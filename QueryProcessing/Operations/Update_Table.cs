@@ -28,13 +28,27 @@ namespace QueryProcessing.Operations
                 int index = getIndex(cols, update[1]);
                 if (index != -1 && update.Count == 3)
                 {
-                    UpdateTable.execute(dbName, update, index);
-                    return (OperationStatus.Success, "Data has been updated successfully.");
+                    if (validateType(cols, update[1], update[2]))
+                    {
+                        UpdateTable.execute(dbName, update, index);
+                        return (OperationStatus.Success, "Data has been updated successfully.");
+                    }
+                    else
+                    {
+                        return (OperationStatus.Error, $"Value {update[2]} incorrect for column {update[1]}.");
+                    }
                 }
                 else if (index != -1 && getIndex(cols, update[3]) != -1)
                 {
-                    UpdateTable.execute(dbName, update, index, getIndex(cols, update[3]));
-                    return (OperationStatus.Success, "Data has been updated successfully.");
+                    if (validateType(cols, update[1], update[2]) && validateType(cols, update[3], update[4]))
+                    {
+                        UpdateTable.execute(dbName, update, index, getIndex(cols, update[3]));
+                        return (OperationStatus.Success, "Data has been updated successfully.");
+                    }
+                    else
+                    {
+                        return (OperationStatus.Error, $"Value {update[2]} incorrect for column {update[1]}.");
+                    }
                 }
             }
             return (OperationStatus.Error, $"No table {update[0]} in DB {dbName}.");
@@ -57,7 +71,7 @@ namespace QueryProcessing.Operations
             int index = getIndex(cols, table);
             if (index != -1) 
             {
-                string type = cols[index][3];
+                string type = cols[index][1];
                 switch (type) 
                 {
                     case "INTEGER":
@@ -73,11 +87,11 @@ namespace QueryProcessing.Operations
                         {
                             string pattern = @"\((\d+)\)";
                             Match match = Regex.Match(type, pattern);
-
-                            if (match.Success)
+                            string v = match.Groups[1].Value;
+                            int i = int.Parse(v);
+                            if (value.Length <= i) 
                             {
-                                string v = match.Groups[1].Value;
-                                Console.WriteLine($"The value between parentheses is: {value}");
+                                return true;
                             }
                         }
                         break;
