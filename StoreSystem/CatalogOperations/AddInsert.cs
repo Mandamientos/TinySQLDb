@@ -19,7 +19,6 @@ namespace StoreSystem.CatalogOperations
             using (BinaryWriter writer = new(stream))
             {
                 string result = $"{string.Join(",", inserts)}\n";
-                Console.WriteLine(result);
                 writer.Write(result);
             }
 

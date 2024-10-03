@@ -36,13 +36,18 @@ namespace QueryProcessing.SQLParser
             {
                 return Drop_Table.execute(sentence.Substring("DROP TABLE ".Length).Trim());
             }
-            else if (insertInto(sentence)) 
+            else if (insertInto(sentence))
             {
                 Console.WriteLine("Si cumplio el insert into");
                 return Insert_Into.execute(TableName, inserts); ;
-            } else if (parseSelectTable(sentence))
+            } 
+            else if (parseSelectTable(sentence))
             {
                 return Select_Table.execute(createSelectModel(sentence));
+            }
+            else if(updateParse(sentence) != null)
+            {
+                return Update_Table.execute(updateParse(sentence));
             }
 
 
@@ -60,6 +65,34 @@ namespace QueryProcessing.SQLParser
             }
             return false;
         }
+
+        private static List<string> updateParse(string sql)
+        {
+            Console.WriteLine("entro al update");
+            List<string> extract = null;
+            var pattern = @"UPDATE\s+(?<tableName>\w+)\s+SET\s+(?<column>\w+)\s*=\s*(?<value>'?\w+'?)\s*(WHERE\s+(?<columnName>\w+)\s*=\s*(?<value2>'?\w+'?))?";
+            sql = sql.Replace("\\u0027", "'");
+            var match = Regex.Match(sql, pattern, RegexOptions.IgnoreCase);
+            if (match.Success)
+            {
+                // Extracting the mandatory fields
+                string tableName = match.Groups["tableName"].Value;
+                string column = match.Groups["column"].Value;
+                string  value = match.Groups["value"].Value.Replace("'", "");
+                extract = new List<string> { tableName, column, value};
+
+                // Checking if WHERE clause is present
+                if (match.Groups["columnName"].Success && match.Groups["value2"].Success)
+                {
+                    string columnName = match.Groups["columnName"].Value;
+                    string value2 = match.Groups["value2"].Value.Replace("'", "");
+                    extract.AddRange(new[] { columnName, value2 });
+                }
+            }
+            return extract;
+        }
+
+
 
         private static bool insertInto(string sql) 
         {
