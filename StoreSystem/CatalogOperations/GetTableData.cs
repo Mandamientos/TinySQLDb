@@ -94,7 +94,14 @@ namespace StoreSystem.CatalogOperations
                     {
                         rawData.RemoveAt(i);
                     }
-                } else if (whereValue.GetType() == typeof(double))
+                } else if (whereValue.GetType() == typeof(DateTime))
+                {
+                    if (!DateTimeCompare(whereOperator, (DateTime)whereValue, (DateTime)rawData[i][index]))
+                    {
+                        rawData.RemoveAt(i);
+                    }
+                }
+                else if (whereValue.GetType() == typeof(double))
                 {
                     if (!DoubleCompare(whereOperator, (double)whereValue, (double)rawData[i][index]))
                     {
@@ -154,6 +161,28 @@ namespace StoreSystem.CatalogOperations
             }
         }
         public static bool DoubleCompare(string whereOperator, double whereValue, double tableValue)
+        {
+            Console.WriteLine($"{whereValue} {whereOperator} {tableValue}");
+            switch (whereOperator)
+            {
+                case "==":
+                    if (Equals(whereValue, tableValue)) return true;
+                    else return false;
+                case "NOT":
+                    if (!Equals(whereValue, tableValue)) return true;
+                    else return false;
+                case ">":
+                    if (whereValue < tableValue) return true;
+                    else return false;
+                case "<":
+                    if (whereValue > tableValue) return true;
+                    else return false;
+                default:
+                    return false;
+            }
+        }
+
+        public static bool DateTimeCompare(string whereOperator, DateTime whereValue, DateTime tableValue)
         {
             Console.WriteLine($"{whereValue} {whereOperator} {tableValue}");
             switch (whereOperator)
