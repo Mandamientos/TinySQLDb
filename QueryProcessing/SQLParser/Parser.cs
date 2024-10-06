@@ -8,6 +8,7 @@ using QueryProcessing.Operations;
 using System.Text.RegularExpressions;
 using QueryProcessing.Models;
 using System.Diagnostics;
+using StoreSystem.CatalogOperations;
 
 namespace QueryProcessing.SQLParser
 {
@@ -38,16 +39,19 @@ namespace QueryProcessing.SQLParser
             }
             else if (insertInto(sentence))
             {
-                Console.WriteLine("Si cumplio el insert into");
                 return Insert_Into.execute(TableName, inserts); ;
-            } 
+            }
             else if (parseSelectTable(sentence))
             {
                 return Select_Table.execute(createSelectModel(sentence));
             }
-            else if(updateParse(sentence) != null)
+            else if (updateParse(sentence) != null)
             {
                 return Update_Table.execute(updateParse(sentence));
+            }
+            else if (createIndexParse(sentence)) 
+            {
+                return Create_Index.execute(sentence);
             }
 
 
@@ -57,8 +61,7 @@ namespace QueryProcessing.SQLParser
         private static bool createTableParse(string sql) 
         {
             CreateColumns = new Dictionary<string, (string DataType, bool IsNullable, List<string> Constraints)>();
-            var pattern = @"CREATE TABLE\s+(?<tableName>\w+)\s*\((?<columns>.+?)\)\s*;";
-            sql = sql + ";";
+            var pattern = @"CREATE TABLE\s+(?<tableName>\w+)\s*\((?<columns>.+?)\)\s*";
             if (ParseCreateTableStatement(sql, pattern)) 
             {
                 return true;
@@ -66,9 +69,20 @@ namespace QueryProcessing.SQLParser
             return false;
         }
 
+        private static bool createIndexParse(string sql)
+        {
+            // Updated pattern to handle flexible spaces and be case-insensitive
+            var pattern = @"CREATE\s+INDEX\s+(?<indexName>\w+)\s+ON\s+(?<tableName>\w+)\s*\(\s*(?<columnName>\w+)\s*\)\s+OF\s+TYPE\s+(?<indexType>BTREE|BST)\s*";
+
+            // Using RegexOptions.IgnoreCase to make the regex case-insensitive
+            var match = Regex.Match(sql, pattern, RegexOptions.IgnoreCase);
+
+            return match.Success;
+        }
+
+
         private static List<string> updateParse(string sql)
         {
-            Console.WriteLine("entro al update");
             List<string> extract = null;
             var pattern = @"UPDATE\s+(?<tableName>\w+)\s+SET\s+(?<column>\w+)\s*=\s*(?<value>'?\w+'?)\s*(WHERE\s+(?<columnName>\w+)\s*=\s*(?<value2>'?\w+'?))?";
             sql = sql.Replace("\\u0027", "'");
