@@ -10,6 +10,7 @@ using System.Text.Json;
 using ApiInterface.Models;
 using ApiInterface.Processor;
 using System.Diagnostics.Metrics;
+using QueryProcessing;
 
 namespace ApiInterface
 {
@@ -52,7 +53,20 @@ namespace ApiInterface
             var response = responseCreator.responseObject();
 
             string jsonResponse = JsonSerializer.Serialize(response);
+            arboles();
+
             await sendResponse(clientStream, jsonResponse);
+        }
+
+        private static void arboles() 
+        {
+            if (GlobalTreeStorage.Trees.Count != 0)
+            {
+                foreach (var tree in GlobalTreeStorage.Trees)
+                {
+                    tree.RecorridoInorden();
+                }
+            }
         }
 
         public static async Task<String> getRawMessage(NetworkStream clientStream)

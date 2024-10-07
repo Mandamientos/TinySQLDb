@@ -77,5 +77,7 @@ namespace StoreSystem.CatalogOperations
                 }
             return false;
         }
+
+        
     }
 }

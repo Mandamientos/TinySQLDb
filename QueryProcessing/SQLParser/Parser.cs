@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using QueryProcessing.Models;
 using System.Diagnostics;
 using StoreSystem.CatalogOperations;
+using System.Globalization;
 
 namespace QueryProcessing.SQLParser
 {
@@ -53,6 +54,10 @@ namespace QueryProcessing.SQLParser
             {
                 return Create_Index.execute(sentence);
             }
+            else if (deleteFromParse(sentence)!=null)
+            {
+                return Delete_From.execute(deleteFromParse(sentence));
+            }
 
 
             return (OperationStatus.Error, "There might be an error in your syntax; please check it.");
@@ -81,7 +86,112 @@ namespace QueryProcessing.SQLParser
         }
 
 
-        private static List<string> updateParse(string sql)
+        private static List<string> deleteFromParse(string sql)
+        {
+            List<string> extract = null;
+
+            // Obtain the current database name
+            string dbName = SQLProcessor.selectedDB;
+
+            // Updated pattern for DELETE query
+            var pattern = @"DELETE FROM\s+(?<tableName>\w+)(?:\s+WHERE\s+(?<columnName>\w+)\s*(?<operator>=|!=|>|>=|<|<=)\s*(?<value>'?\w+'?))?";
+
+            // Replace escaped quotes with regular quotes
+            sql = sql.Replace("\\u0027", "'");
+
+            // Match the SQL statement against the pattern
+            var match = Regex.Match(sql, pattern, RegexOptions.IgnoreCase);
+
+            if (match.Success)
+            {
+                // Extract the mandatory table name
+                string tableName = match.Groups["tableName"].Value;
+
+                // Initialize the extract list with dbName and tableName
+                extract = new List<string> { dbName, tableName };
+
+                // Fetch table columns and their attributes
+                List<List<string>> columns = GetTableColumns.GetTableNameColumns(dbName, tableName);
+
+                // If a WHERE clause is present
+                if (match.Groups["columnName"].Success && match.Groups["operator"].Success && match.Groups["value"].Success)
+                {
+                    string columnName = match.Groups["columnName"].Value;
+                    string operatorSymbol = match.Groups["operator"].Value;
+                    string value = match.Groups["value"].Value.Replace("'", ""); // Remove quotes from value
+                    string columnType = "";
+
+                    // Validate that the column exists and the value is correct
+                    bool columnExistsAndValid = false;
+                    int columnIndex = -1;
+
+                    for (int i = 0; i < columns.Count; i++)
+                    {
+                        if (columns[i][0].Equals(columnName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            columnIndex = i; // Capture the index of the found column
+                            columnType = columns[i][1];
+
+                            // Validate value based on column type
+                            if (ValidateColumnValue(columnType, value))
+                            {
+                                columnExistsAndValid = true;
+                            }
+                            break; // Column found, exit loop
+                        }
+                    }
+
+                    // If the column exists and the value is valid, add them to extract
+                    if (columnExistsAndValid && columnIndex != -1)
+                    {
+                        extract.Add(value);
+                        extract.Add(columnType);
+                        extract.Add(columnIndex.ToString());
+                        extract.Add(operatorSymbol);         // Add operatorSymbol to extract
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"Invalid column or value type for column '{columnName}' in table '{tableName}'.");
+                    }
+                }
+            }
+
+            return extract;
+        }
+
+        // Method to validate the value based on the column type
+        private static bool ValidateColumnValue(string columnType, string value)
+        {
+            if (columnType.StartsWith("INTEGER", StringComparison.OrdinalIgnoreCase))
+            {
+                // Check if value is a valid integer
+                return int.TryParse(value, out _);
+            }
+            else if (columnType.StartsWith("VARCHAR", StringComparison.OrdinalIgnoreCase))
+            {
+                // Extract the max length from the column type (e.g., VARCHAR(25))
+                var match = Regex.Match(columnType, @"VARCHAR\((\d+)\)");
+                if (match.Success)
+                {
+                    int maxLength = int.Parse(match.Groups[1].Value);
+                    // Ensure the value's length is within the allowed length
+                    return value.Length <= maxLength;
+                }
+            }
+            else if (columnType.StartsWith("DATETIME", StringComparison.OrdinalIgnoreCase))
+            {
+                // Validate that the value matches the datetime format: "yyyy-MM-dd HH:mm:ss"
+                DateTime dateValue;
+                return DateTime.TryParseExact(value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateValue);
+            }
+
+            // If the column type is unknown or unsupported
+            return false;
+        }
+
+
+
+    private static List<string> updateParse(string sql)
         {
             List<string> extract = null;
             var pattern = @"UPDATE\s+(?<tableName>\w+)\s+SET\s+(?<column>\w+)\s*=\s*(?<value>'?\w+'?)\s*(WHERE\s+(?<columnName>\w+)\s*=\s*(?<value2>'?\w+'?))?";

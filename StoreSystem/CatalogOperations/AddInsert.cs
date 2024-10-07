@@ -11,7 +11,7 @@ namespace StoreSystem.CatalogOperations
     public class AddInsert
     {
         private const string tabDBPath = @"C:\TinySQLDb\";
-
+        
         public static void execute(string dbName, string tabName, List<string> inserts)
         {
             string path = tabDBPath + $@"Databases\{dbName}\{tabName}.table";
