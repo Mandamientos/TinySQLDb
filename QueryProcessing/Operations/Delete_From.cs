@@ -21,6 +21,9 @@ namespace QueryProcessing.Operations
             else
             {
                 DeleteFrom.execute(delete);
+              
+                    return (OperationStatus.Success, "data deleted from table.");
             }
         }
+    }
 }

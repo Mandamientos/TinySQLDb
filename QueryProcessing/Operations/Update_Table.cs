@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace QueryProcessing.Operations
     internal class Update_Table
     {
 
-        public static (OperationStatus, string) execute(List<string> update) 
+        public static (OperationStatus, string) execute(List<string> update)
         {
             string dbName = SQLProcessor.selectedDB;
             if (string.IsNullOrEmpty(dbName))
@@ -54,11 +55,11 @@ namespace QueryProcessing.Operations
             return (OperationStatus.Error, $"No table {update[0]} in DB {dbName}.");
         }
 
-        private static int getIndex(List<List<string>> cols, string value) 
+        private static int getIndex(List<List<string>> cols, string value)
         {
-            for (int i = 0; i < cols.Count; i++) 
+            for (int i = 0; i < cols.Count; i++)
             {
-                if (cols[i].Contains(value)) 
+                if (cols[i].Contains(value))
                 {
                     return i;
                 }
@@ -66,16 +67,16 @@ namespace QueryProcessing.Operations
             return -1;
         }
 
-        private static bool validateType(List<List<string>> cols, string table, string value) 
+        private static bool validateType(List<List<string>> cols, string table, string value)
         {
             int index = getIndex(cols, table);
-            if (index != -1) 
+            if (index != -1)
             {
                 string type = cols[index][1];
-                switch (type) 
+                switch (type)
                 {
                     case "INTEGER":
-                        if (int.TryParse(value, out _)) 
+                        if (int.TryParse(value, out _))
                         {
                             return true;
                         }
@@ -89,7 +90,7 @@ namespace QueryProcessing.Operations
                             Match match = Regex.Match(type, pattern);
                             string v = match.Groups[1].Value;
                             int i = int.Parse(v);
-                            if (value.Length <= i) 
+                            if (value.Length <= i)
                             {
                                 return true;
                             }

@@ -16,7 +16,8 @@ namespace StoreSystem.CatalogOperations
             using (FileStream stream = File.Open(sysDBPath, FileMode.Append, FileAccess.Write))
             using (BinaryWriter writer = new(stream))
             {
-                writer.Write(dbName);
+                writer.Write(dbName);               // Write the database name
+                writer.Write(Environment.NewLine);  // Write a line break
             }
         }
 

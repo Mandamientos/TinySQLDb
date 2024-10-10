@@ -66,7 +66,7 @@ namespace QueryProcessing.SQLParser
         private static bool createTableParse(string sql) 
         {
             CreateColumns = new Dictionary<string, (string DataType, bool IsNullable, List<string> Constraints)>();
-            var pattern = @"CREATE TABLE\s+(?<tableName>\w+)\s*\((?<columns>.+?)\)\s*";
+            var pattern = @"CREATE TABLE\s+(?<tableName>\w+)\s+AS\s*\((?<columns>[^()]*|[^()]*\(.*\)[^()]*)\)\s*";
             if (ParseCreateTableStatement(sql, pattern)) 
             {
                 return true;
@@ -191,7 +191,7 @@ namespace QueryProcessing.SQLParser
 
 
 
-    private static List<string> updateParse(string sql)
+        private static List<string> updateParse(string sql)
         {
             List<string> extract = null;
             var pattern = @"UPDATE\s+(?<tableName>\w+)\s+SET\s+(?<column>\w+)\s*=\s*(?<value>'?\w+'?)\s*(WHERE\s+(?<columnName>\w+)\s*=\s*(?<value2>'?\w+'?))?";
@@ -202,8 +202,8 @@ namespace QueryProcessing.SQLParser
                 // Extracting the mandatory fields
                 string tableName = match.Groups["tableName"].Value;
                 string column = match.Groups["column"].Value;
-                string  value = match.Groups["value"].Value.Replace("'", "");
-                extract = new List<string> { tableName, column, value};
+                string value = match.Groups["value"].Value.Replace("'", "");
+                extract = new List<string> { tableName, column, value };
 
                 // Checking if WHERE clause is present
                 if (match.Groups["columnName"].Success && match.Groups["value2"].Success)
@@ -218,11 +218,13 @@ namespace QueryProcessing.SQLParser
 
 
 
+
+
         private static bool insertInto(string sql) 
         {
-            Console.WriteLine("entro al inser into a validar");
             inserts= new List<string>();
-            var pattern = @"Insert Into\s+(?<tableName>\w+)\s*\((?<inserts>.+?)\)";
+            var pattern = @"INSERT INTO\s+(?<tableName>\w+)\s+VALUES\s*\((?<inserts>.+?)\)\s*";
+            sql = sql.Replace("\u0027", "");
             if (ParseInsertStatement(sql, pattern))
             {
                 return true;
@@ -239,6 +241,7 @@ namespace QueryProcessing.SQLParser
             }
             TableName = match.Groups["tableName"].Value.Trim();
             var columnsPart = match.Groups["columns"].Value.Trim();
+            Console.WriteLine(columnsPart);
             var columnDefinitions = ParseColumns(columnsPart);
             foreach (var columnDef in columnDefinitions)
             {
@@ -330,7 +333,7 @@ namespace QueryProcessing.SQLParser
 
         static bool IsCompleteConstraint(string constraint)
             {
-                var knownConstraints = new List<string> { "PrimaryKey", "ForeignKey", "Unique", "Check", "INCREMENTAL" };
+                var knownConstraints = new List<string> { "PRIMARYKEY", "ForeignKey", "UNIQUE", "Check", "INCREMENTAL" };
 
                 return knownConstraints.Contains(constraint, StringComparer.OrdinalIgnoreCase);
             }
@@ -440,7 +443,6 @@ namespace QueryProcessing.SQLParser
                     string whereValueW = whereValue.Replace("'", "");
                     if (DateTime.TryParse(whereValueW, out _)) {
                         sql.whereValue = DateTime.Parse(whereValueW);
-                        Console.WriteLine("El dato es un datetime");
                     }
                     else
                         sql.whereValue = whereValueW;

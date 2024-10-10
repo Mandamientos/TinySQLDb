@@ -17,7 +17,7 @@ namespace StoreSystem.CatalogOperations
             string fileContent = System.Text.Encoding.UTF8.GetString(fileBytes);
             var lines = fileContent.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-            for(int i = 0; i < lines.Count; i++)
+            for (int i = 0; i < lines.Count; i++)
             {
                 // Dividir la línea en columnas
                 var columns = lines[i].Split(',');
@@ -38,6 +38,8 @@ namespace StoreSystem.CatalogOperations
             }
             string modifiedContent = string.Join("\n", lines);
             byte[] modifiedBytes = System.Text.Encoding.UTF8.GetBytes(modifiedContent);
+            Console.WriteLine(modifiedContent);
+            Console.WriteLine(modifiedBytes);
 
             // Escribir el archivo binario con los cambios
             using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
@@ -81,8 +83,9 @@ namespace StoreSystem.CatalogOperations
             }
 
             string modifiedContent = string.Join("\n", lines);
+            Console.WriteLine(modifiedContent);
             byte[] modifiedBytes = System.Text.Encoding.UTF8.GetBytes(modifiedContent);
-
+            Console.WriteLine(modifiedBytes);
             // Escribir el archivo binario con los cambios
             using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create)))
             {

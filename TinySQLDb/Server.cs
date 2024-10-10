@@ -53,7 +53,7 @@ namespace ApiInterface
             var response = responseCreator.responseObject();
 
             string jsonResponse = JsonSerializer.Serialize(response);
-            arboles();
+            //arboles();
 
             await sendResponse(clientStream, jsonResponse);
         }

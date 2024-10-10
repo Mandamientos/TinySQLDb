@@ -60,7 +60,7 @@ namespace StoreSystem.CatalogOperations
         public static object convertData(string data, string dataType)
         {
             if (dataType.StartsWith("VARCHAR")) return data;
-
+            Console.WriteLine(data);
             switch (dataType) {
                 case "INTEGER":
                     return int.Parse(data);
